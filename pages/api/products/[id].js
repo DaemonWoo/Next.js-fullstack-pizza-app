@@ -2,53 +2,51 @@ import dbConnect from "../../../utils/mongo";
 import Product from "../../../models/Product";
 
 export default async function handler(req, res) {
-    const {
-        method,
-        query: {id},
-        cookies
-    } = req
+  const {
+    method,
+    query: { id },
+    cookies,
+  } = req;
 
-    const token = cookies.token
+  const token = cookies.token;
 
-    dbConnect()
-        .then(() => console.log("Connected"))
-        .catch((e)=> console.log(e.message))
+  dbConnect()
+    .then(() => console.log("Connected"))
+    .catch((e) => console.log(e.message));
 
-    if(method === "GET") {
-        try {
-            const product = await Product.findById(id)
-            res.status(200).json(product)
-        } catch (err) {
-            res.status(500).json(err)
-        }
+  if (method === "GET") {
+    try {
+      const product = await Product.findById(id);
+      res.status(200).json(product);
+    } catch (err) {
+      res.status(500).json(err);
     }
+  }
 
-    if(method === "PUT") {
-        if(!token || token !== process.env.TOKEN) {
-            return res.status(401).json("Not authenticated!")
-        }
-        try {
-            const product = await Product.findByIdAndUpdate(
-                id, req.body, {
-                    new: true
-                }
-            )
-            res.status(200).json(product)
-        } catch (err) {
-            res.status(500).json(err)
-        }
+  if (method === "PUT") {
+    if (!token || token !== process.env.TOKEN) {
+      return res.status(401).json("Not authenticated!");
     }
+    try {
+      const product = await Product.findByIdAndUpdate(id, req.body, {
+        new: true,
+      });
+      res.status(200).json(product);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
 
-    if(method === "DELETE") {
-        if(!token || token !== process.env.TOKEN) {
-            return res.status(401).json("Not authenticated!")
-        }
-        console.log(req)
-        try {
-            await Product.findByIdAndDelete(id)
-            res.status(200).json("The product has been deleted")
-        } catch (err) {
-            res.status(500).json(err)
-        }
+  if (method === "DELETE") {
+    if (!token || token !== process.env.TOKEN) {
+      return res.status(401).json("Not authenticated!");
     }
+    console.log(req);
+    try {
+      await Product.findByIdAndDelete(id);
+      res.status(200).json("The product has been deleted");
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
 }
